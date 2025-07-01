@@ -1,0 +1,26 @@
+author_weight: 0.2
+categories:
+- cs.LG  # 机器学习
+- cs.AI  # 人工智能
+- cs.CL  # 计算语言学
+date_range: null
+email:
+  password: your_app_password
+  port: 587
+  recipient: your_email@example.com
+  smtp_server: smtp.gmail.com
+  username: your_email@example.com
+email_address: your_email@example.com
+email_on_error: true
+email_subscription: true  # 是否启用邮件订阅功能
+history_enabled: true
+keywords:
+- reinforcement learning
+- LLM agents
+- large language model
+- foundation model
+- multimodal
+max_days_old: 365
+max_results: 1000
+recency_weight: 0.3
+run_hour: 8

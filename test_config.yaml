@@ -1,0 +1,22 @@
+# test_config.yaml - 测试用配置
+keywords:
+  - agent
+  - reinforcement learning
+  - large language model
+keyword_weight: 1.0
+recency_weight: 0.5
+author_weight: 0.5
+score_threshold: 1.2
+max_results: 10
+categories:
+  - cs.AI  # Artificial Intelligence
+  - cs.LG  # Machine Learning
+  - cs.CL  # Computation and Language
+run_hour: 8
+email_on_error: true  # 开启错误邮件通知
+email:
+  smtp_server: smtp.test.com  # 测试用SMTP服务器
+  port: 587
+  username: test@example.com
+  password: test_password
+  recipient: test@example.com

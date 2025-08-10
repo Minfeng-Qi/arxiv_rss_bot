@@ -1,29 +1,46 @@
-# 📚 arXiv RSS Filter Bot
-# arXiv RSS 过滤机器人
+# 📚 arXiv RSS Filter Bot with Conference Extension
+# arXiv RSS 过滤机器人 + 顶级会议论文推送
 
-自动从arXiv获取最新论文，根据您的研究兴趣和时间范围进行过滤，提取作者和机构信息，并生成个性化RSS订阅源。支持Web界面进行便捷的配置和管理，以及邮件订阅功能。
+🎯 **智能学术论文推送系统** - 自动从arXiv获取最新论文，并支持从OpenReview获取顶级AI和安全会议的高质量论文。根据您的研究兴趣进行智能过滤，提取作者和机构信息，并生成个性化RSS订阅源。支持现代化Web界面和智能邮件推送系统。
 
 [English](#features) | [中文说明](#功能特性)
 
 ## Features
 
+### 🚀 **Core Features**
+- ✅ **Dual Paper Source**: arXiv API + OpenReview for comprehensive coverage
+- ✅ **Intelligent Filtering**: Advanced keyword and category-based filtering
+- ✅ **Smart Scheduling**: Customizable push frequencies for different sources
+- ✅ **Modern Web Interface**: Vue.js dashboard with real-time status monitoring
+- ✅ **Email Subscription**: HTML-formatted emails with categorized papers
+- ✅ **API-First Design**: Complete REST API for integration and automation
+
+### 📖 **arXiv Integration**
 - ✅ **Automatic Paper Fetching**: Uses arXiv API to fetch the latest papers from specified categories
 - ✅ **Keyword Filtering**: Filters papers based on keywords in title and abstract
 - ✅ **Date-based Filtering**: Only keeps papers published within a specified time range
 - ✅ **Specific Period Filtering**: Filter papers by specific year and/or month
 - ✅ **Author Information Extraction**: Extracts and displays author names and affiliations
+- ✅ **Extended Time Range**: Support for fetching papers up to 365 days old
+- ✅ **Daily Push**: Automated daily delivery at 7:00 AM
+
+### 🎓 **Conference Paper Integration** ⭐ **NEW**
+- ✅ **Top-Tier Conferences**: ICLR, NeurIPS, ICML, AAAI, IJCAI for AI/ML
+- ✅ **Security Conferences**: IEEE S&P, CCS, USENIX Security, NDSS, AISec for security
+- ✅ **Cryptography Conferences**: CRYPTO, EUROCRYPT for cryptographic research  
+- ✅ **OpenReview Integration**: Direct access to peer-reviewed conference papers
+- ✅ **Smart Categorization**: AI/ML, Security, Cryptography, and AI Security categories
+- ✅ **Flexible Scheduling**: Monthly pushes for AI/ML, quarterly for security conferences
+- ✅ **Automatic Scheduler**: Background job system with configurable triggers
+
+### 🎯 **Advanced Features**
 - ✅ **RSS Generation**: Automatically generates an RSS feed compatible with any reader
-- ✅ **Web Interface**: Modern Vue.js dashboard for easy configuration and feed management
-- ✅ **Scheduled Running**: Can run daily at a specified hour
-- ✅ **Error Notifications**: Configurable email alerts for error conditions
-- ✅ **Email Subscription**: Automatically sends new papers to your inbox without duplicates
 - ✅ **Comprehensive Logging**: Detailed logs to track every step of the process
-- ✅ **Flexible Configuration**: Easily customize all parameters through the UI or config file
 - ✅ **Robust Error Handling**: Fallback mechanisms for API issues and timezone handling
 - ✅ **Historical Records**: Saves historical query results for future reference and comparison
 - ✅ **Pagination Support**: Browse through large sets of filtered papers with ease
-- ✅ **Extended Time Range**: Support for fetching papers up to 365 days old
 - ✅ **Batch Processing**: Efficiently processes large numbers of papers in batches
+- ✅ **Duplicate Prevention**: Advanced tracking to prevent duplicate paper delivery
 
 ## Requirements
 
@@ -38,6 +55,33 @@
   - apscheduler
   - flask (for API)
   - flask-cors
+  - smtplib (for email functionality)
+
+## 🚀 **Quick Start**
+
+### Option 1: Complete Setup (Recommended)
+```bash
+# Clone repository
+git clone https://github.com/Minfeng-Qi/arxiv_rss_bot.git
+cd arxiv_rss_bot
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure your settings
+cp config.yaml.example config.yaml
+nano config.yaml
+
+# Start the API server
+python api.py
+
+# Access the web interface at http://localhost:8001
+```
+
+### Option 2: Docker Deployment (Coming Soon)
+```bash
+docker run -p 8001:8001 -v $(pwd)/config.yaml:/app/config.yaml arxiv-bot:latest
+```
 
 ## Installation
 
@@ -116,7 +160,7 @@ categories:          # arXiv categories to fetch from
   - cs.AI           # Artificial Intelligence
   - cs.LG           # Machine Learning
   - cs.CL           # Computation and Language
-run_hour: 8          # Hour of day to run when scheduled (24h format)
+run_hour: 7          # Hour of day to run when scheduled (24h format) - arXiv papers at 7:00 AM
 email_on_error: true # Send email on error
 author_weight: 0.2   # Weight for author matching
 recency_weight: 0.3  # Weight for recency in ranking
@@ -129,7 +173,21 @@ email:               # Email configuration for notifications
 history_enabled: true # Enable saving historical records of query results
 email_subscription: true # Enable email subscription for new papers
 
-# Optional: Filter papers by specific year and/or month
+# ⭐ NEW: Conference Paper Configuration
+conferences:
+  enabled: true  # Enable conference paper fetching
+  openreview:
+    baseurl: https://api2.openreview.net
+    username: ""  # Optional: OpenReview username (leave empty for anonymous access)
+    password: ""  # Optional: OpenReview password
+  
+  # Conference push settings
+  conference_email:
+    enabled: true  # Enable conference paper email subscription
+    subject_prefix: "[Conference Papers]"
+    separate_by_category: true
+
+# Optional: Filter papers by specific year and/or month  
 # date_range:
 #   year: 2025      # Optional: Specify a year
 #   month: 5        # Optional: Specify a month (1-12)
@@ -197,21 +255,53 @@ email:
 
 The system records sent paper IDs to avoid sending the same paper again. Sent papers are saved in `subscription_history.json`.
 
-## API Endpoints
+## 📡 **API Endpoints**
 
-The backend API supports the following endpoints:
+The backend provides a comprehensive REST API (v1.1.0) with 21+ endpoints:
 
+### **Core arXiv API**
 - `GET /api/config` - Get current configuration
-- `POST /api/config` - Update configuration
-- `POST /api/run` - Run the RSS bot manually
+- `POST /api/config` - Update configuration  
+- `POST /api/run` - Run complete pipeline (RSS + email)
+- `POST /api/run/rss-only` - ⭐ **NEW** Run RSS generation only (no email)
+- `GET /api/status` - Get bot status and paper statistics
+- `GET /api/logs` - Get recent application logs
+
+### **Feed Management**
 - `GET /api/output` - List all generated RSS files
-- `GET /api/output/<filename>` - Get specific RSS file content
-- `GET /api/status` - Get bot status information
-- `GET /api/logs` - Get recent logs
-- `GET /api/history` - Get list of historical records with pagination
-- `GET /api/history/<record_id>` - Get details of a specific historical record
-- `GET /api/subscription/history` - Get subscription history
+- `GET /api/output/<filename>` - Get/delete specific RSS file content
+- `GET /api/history` - Get historical records with pagination
+- `GET /api/history/<record_id>` - Get specific historical record details
+
+### **Email & Subscription**
 - `POST /api/email/test` - Test email configuration
+- `GET /api/subscription/history` - Get arXiv subscription history
+
+### **⭐ Conference Paper API (NEW)**
+- `POST /api/conference/run` - Run complete conference pipeline
+- `POST /api/conference/fetch` - Fetch conference papers only
+- `POST /api/conference/subscription` - Send conference emails only
+- `GET /api/conference/output` - List conference paper files
+- `GET /api/conference/output/<filename>` - Get/delete conference files
+- `GET /api/conference/subscription/history` - Get conference subscription history
+
+### **⭐ Scheduler Management (NEW)**
+- `POST /api/conference/scheduler/start` - Start conference scheduler
+- `POST /api/conference/scheduler/stop` - Stop conference scheduler
+- `GET /api/conference/scheduler/status` - Get scheduler status and next runs
+- `POST /api/conference/scheduler/test` - Test immediate scheduler run
+
+### **Documentation**
+- `GET /api/docs` - Get complete API documentation
+
+## 🕐 **Push Schedule Overview**
+
+| **Source** | **Frequency** | **Time** | **Content** |
+|-----------|--------------|----------|-------------|
+| arXiv | Daily | 7:00 AM | Latest papers from your categories |
+| AI/ML Conferences | Monthly | 1st day, 9:00 AM | ICLR, NeurIPS, ICML, AAAI, IJCAI |
+| Security Conferences | Quarterly | 1st day, 10:00 AM | IEEE S&P, CCS, USENIX, NDSS, AISec |
+| Daily Check | Daily | 8:00 AM | System health and special updates |
 
 ## Filtering System
 

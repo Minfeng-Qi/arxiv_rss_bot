@@ -131,6 +131,38 @@ def save_history_record(config, processed_papers, output_file):
         logger.error(f"保存历史记录失败: {str(e)}")
         return None
 
+def run_pipeline_with_subscription():
+    """运行包含邮件订阅的完整流水线"""
+    try:
+        # 首先运行基本流程
+        result = run_pipeline()
+        
+        if result.get('success') and result.get('papers_count', 0) > 0:
+            # 只有在成功生成论文时才运行邮件订阅
+            config = load_config()
+            if config.get('email_subscription', False):
+                logger.info("Running email subscription after RSS generation...")
+                subscription_result = run_subscription()
+                if subscription_result:
+                    logger.info("Email subscription completed successfully")
+                    result['email_sent'] = True
+                else:
+                    logger.warning("Email subscription did not send any emails")
+                    result['email_sent'] = False
+            else:
+                logger.info("Email subscription is disabled")
+                result['email_sent'] = False
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in pipeline with subscription: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Pipeline with subscription failed"
+        }
+
 def run_pipeline():
     """运行完整的处理流水线
     
@@ -217,14 +249,8 @@ def run_pipeline():
             history_id = save_history_record(config, processed_papers, output_file)
             logger.info(f"Saved history record with ID: {history_id}")
             
-            # 运行邮件订阅功能，发送最新论文
-            if config.get('email_subscription', False):
-                logger.info("Running email subscription...")
-                subscription_result = run_subscription()
-                if subscription_result:
-                    logger.info("Email subscription completed successfully")
-                else:
-                    logger.warning("Email subscription did not send any emails")
+            # 注意：邮件订阅功能已移到单独的模块处理，避免重复推送
+            logger.info("RSS generation completed. Email subscription will be handled separately.")
             
             # 记录处理时间
             elapsed_time = (datetime.now() - fetch_start_time).total_seconds()
@@ -265,7 +291,7 @@ def schedule_job():
     
     scheduler = BlockingScheduler()  # 创建阻塞式调度器
     trigger = CronTrigger(hour=run_hour, minute=0)  # 创建每天指定小时运行的触发器
-    scheduler.add_job(run_pipeline, trigger=trigger)  # 添加运行流水线的任务
+    scheduler.add_job(run_pipeline_with_subscription, trigger=trigger)  # 添加运行流水线的任务
     
     logger.info(f"Scheduled daily job to run at {run_hour}:00")  # 记录定时任务设置成功
     scheduler.start()  # 启动调度器，此调用会阻塞当前线程

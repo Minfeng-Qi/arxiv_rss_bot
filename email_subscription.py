@@ -17,6 +17,8 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 from config_loader import load_config
+import re
+from collections import defaultdict
 
 # 设置日志
 logging.basicConfig(
@@ -112,6 +114,86 @@ def parse_rss_file(rss_file):
         logger.error(f"解析RSS文件失败: {str(e)}")
         return []
 
+def classify_paper(paper, categories_config):
+    """
+    根据标题和摘要对论文进行分类
+    
+    Args:
+        paper (dict): 论文信息
+        categories_config (dict): 分类配置
+        
+    Returns:
+        str: 分类名称，如果没有匹配则返回'🔧 Other AI/ML'
+    """
+    title = paper['title'].lower()
+    description = paper['description'].lower()
+    text_content = f"{title} {description}"
+    
+    # 遍历所有分类，找到第一个匹配的
+    for category_name, keywords in categories_config.items():
+        for keyword in keywords:
+            if keyword.lower() in text_content:
+                return category_name
+    
+    # 如果没有匹配到任何分类，返回默认分类
+    return "🔧 Other AI/ML"
+
+def parse_pub_date(pub_date_str):
+    """
+    解析发布日期字符串为datetime对象
+    
+    Args:
+        pub_date_str (str): 发布日期字符串
+        
+    Returns:
+        datetime: 解析后的日期对象
+    """
+    try:
+        from email.utils import parsedate_to_datetime
+        return parsedate_to_datetime(pub_date_str)
+    except:
+        # 如果解析失败，返回一个很老的日期，确保排序时排在后面
+        return datetime(1900, 1, 1, tzinfo=timezone.utc)
+
+def categorize_and_sort_papers(papers, config):
+    """
+    对论文进行分类并按时间排序
+    
+    Args:
+        papers (list): 论文列表
+        config (dict): 配置信息
+        
+    Returns:
+        dict: 按分类组织的论文字典，每个分类内按时间降序排序
+    """
+    categories_config = config.get('paper_categories', {})
+    if not categories_config:
+        # 如果没有配置分类，使用默认分类
+        categories_config = {"🔧 All Papers": []}
+    
+    # 按分类组织论文
+    categorized_papers = defaultdict(list)
+    
+    for paper in papers:
+        # 解析发布日期
+        paper['parsed_date'] = parse_pub_date(paper.get('pubDate', ''))
+        
+        # 分类论文
+        category = classify_paper(paper, categories_config)
+        categorized_papers[category].append(paper)
+    
+    # 每个分类内按时间降序排序（最新的在前）
+    for category in categorized_papers:
+        categorized_papers[category].sort(
+            key=lambda x: x['parsed_date'], 
+            reverse=True
+        )
+    
+    # 按分类名称排序，确保一致的显示顺序
+    sorted_categories = dict(sorted(categorized_papers.items()))
+    
+    return sorted_categories
+
 def send_subscription_email(papers, config):
     """
     发送订阅邮件
@@ -141,6 +223,10 @@ def send_subscription_email(papers, config):
         return False
         
     try:
+        # 对论文进行分类和排序
+        categorized_papers = categorize_and_sort_papers(papers, config)
+        total_papers = sum(len(papers_in_cat) for papers_in_cat in categorized_papers.values())
+        
         # 创建邮件
         msg = MIMEMultipart()
         msg['From'] = username
@@ -151,32 +237,94 @@ def send_subscription_email(papers, config):
         body = f"""<html>
 <head>
   <style>
-    body {{ font-family: Arial, sans-serif; }}
-    .paper {{ margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #eee; }}
-    .title {{ font-size: 16px; font-weight: bold; color: #1a0dab; }}
+    body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
+    .category {{ margin-bottom: 30px; }}
+    .category-title {{ 
+      font-size: 20px; 
+      font-weight: bold; 
+      color: #2c3e50; 
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #3498db;
+    }}
+    .paper {{ 
+      margin-bottom: 20px; 
+      padding: 15px; 
+      border: 1px solid #e0e0e0; 
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }}
+    .title {{ font-size: 16px; font-weight: bold; color: #1a0dab; margin-bottom: 5px; }}
     .link {{ color: #1a0dab; text-decoration: none; }}
     .link:hover {{ text-decoration: underline; }}
-    .description {{ font-size: 14px; color: #333; margin-top: 5px; }}
+    .pub-date {{ font-size: 12px; color: #666; margin-bottom: 8px; }}
+    .description {{ font-size: 14px; color: #333; }}
+    .category-summary {{ font-size: 14px; color: #7f8c8d; margin-bottom: 10px; }}
   </style>
 </head>
 <body>
-  <h2>arXiv RSS Filter Bot - 最新论文更新</h2>
-  <p>共找到 {len(papers)} 篇符合您兴趣的最新论文：</p>
+  <h2>🎯 arXiv RSS Filter Bot - 最新论文更新</h2>
+  <p>共找到 <strong>{total_papers}</strong> 篇符合您兴趣的最新论文，按类别整理如下：</p>
 """
         
-        # 添加论文信息
-        for paper in papers:
-            title = paper['title']
-            link = paper['link']
-            description = paper['description'].replace('\n', '<br>') if paper['description'] else '无摘要'
+        # 按分类添加论文
+        for category_name, papers_in_category in categorized_papers.items():
+            if not papers_in_category:
+                continue
+                
+            body += f"""
+  <div class="category">
+    <div class="category-title">{category_name}</div>
+    <div class="category-summary">本类别共 {len(papers_in_category)} 篇论文，按发表时间排序：</div>
+"""
             
-            body += f"""<div class="paper">
-  <div class="title"><a href="{link}" class="link">{title}</a></div>
-  <div class="description">{description}</div>
-</div>
+            for paper in papers_in_category:
+                title = paper['title']
+                link = paper['link']
+                pub_date = paper['pubDate']
+                
+                # 处理摘要内容和作者信息
+                description = paper['description'] if paper['description'] else '无摘要'
+                authors = '暂无作者信息'
+                
+                if description != '无摘要':
+                    lines = description.split('\n')
+                    abstract_lines = []
+                    found_authors = False
+                    
+                    for line in lines:
+                        if line.strip().startswith('Authors:'):
+                            # 提取作者信息
+                            authors = line.strip().replace('Authors:', '').strip()
+                            found_authors = True
+                            continue
+                        if found_authors and line.strip():
+                            abstract_lines.append(line.strip())
+                    
+                    # 将摘要合并为连贯的段落
+                    if abstract_lines:
+                        description = ' '.join(abstract_lines)
+                    else:
+                        # 如果没找到Authors:行，使用原始描述但去除多余换行
+                        description = ' '.join(line.strip() for line in lines if line.strip())
+                
+                body += f"""
+    <div class="paper">
+      <div class="title"><a href="{link}" class="link">{title}</a></div>
+      <div class="pub-date">📅 发表日期: {pub_date}</div>
+      <div class="pub-date">👥 作者: {authors}</div>
+      <div class="description">{description}</div>
+    </div>
 """
+            
+            body += "  </div>"  # 关闭category div
         
-        body += """</body></html>"""
+        body += """
+  <hr style="margin-top: 40px; border: none; border-top: 1px solid #bdc3c7;">
+  <p style="text-align: center; color: #7f8c8d; font-size: 12px;">
+    由 arXiv RSS Filter Bot 自动生成 | 每日自动推送最新论文
+  </p>
+</body></html>"""
         
         # 添加HTML正文
         msg.attach(MIMEText(body, 'html'))

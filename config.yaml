@@ -5,11 +5,11 @@ categories:
 - cs.CL  # 计算语言学
 date_range: null
 email:
-  password: your_app_password
-  port: 587
-  recipient: your_email@example.com
-  smtp_server: smtp.gmail.com
-  username: your_email@example.com
+  password: AZaq23Tfcb5wyv57
+  port: 25
+  recipient: blankingsnow@gmail.com
+  smtp_server: smtp.163.com
+  username: 15858114094@163.com
 email_address: your_email@example.com
 email_on_error: true
 email_subscription: true  # 是否启用邮件订阅功能
@@ -20,7 +20,311 @@ keywords:
 - large language model
 - foundation model
 - multimodal
+
+# 文章分类配置
+paper_categories:
+  "🤖 LLM & AI Agents":
+    - "LLM agents"
+    - "large language model"
+    - "language model"
+    - "GPT"
+    - "ChatGPT"
+    - "AI agent"
+    - "artificial intelligence"
+    - "natural language processing"
+  "🎯 Reinforcement Learning":
+    - "reinforcement learning"
+    - "RL"
+    - "policy gradient"
+    - "Q-learning"
+    - "multi-agent"
+    - "reward"
+  "🎨 Multimodal & Computer Vision":
+    - "multimodal"
+    - "computer vision"
+    - "image"
+    - "visual"
+    - "video"
+    - "vision-language"
+    - "VLM"
+  "🏗️ Foundation Models":
+    - "foundation model"
+    - "transformer"
+    - "attention"
+    - "pre-training"
+    - "fine-tuning"
+    - "BERT"
+  "🔧 Other AI/ML":
+    - "machine learning"
+    - "deep learning"
+    - "neural network"
 max_days_old: 365
 max_results: 1000
 recency_weight: 0.3
-run_hour: 8
+run_hour: 7
+
+# 会议论文获取配置
+conferences:
+  enabled: true  # 是否启用会议论文获取功能
+  
+  # OpenReview API配置（可选，未配置时使用匿名访问）
+  openreview:
+    baseurl: https://api2.openreview.net
+    username: ""  # OpenReview用户名，留空使用匿名访问
+    password: ""  # OpenReview密码
+    
+  # 顶级会议配置列表
+  conference_list:
+    # AI/机器学习方向顶级会议
+    - name: "ICLR 2025"
+      venue_id: "ICLR.cc/2025/Conference"
+      description: "International Conference on Learning Representations"
+      category: "AI/ML"
+      keywords:
+        - "large language model"
+        - "foundation model"
+        - "reinforcement learning" 
+        - "multimodal"
+        - "transformer"
+        - "deep learning"
+        - "neural network"
+        - "representation learning"
+      push_frequency: "monthly"  # AI/ML会议月度推送
+      
+    - name: "ICLR 2024"
+      venue_id: "ICLR.cc/2024/Conference"
+      description: "International Conference on Learning Representations"
+      category: "AI/ML"
+      keywords:
+        - "large language model"
+        - "foundation model"
+        - "reinforcement learning"
+        - "multimodal"
+        - "transformer"
+        - "deep learning"
+        - "neural network"
+      push_frequency: "monthly"  # AI/ML会议月度推送
+      
+    - name: "NeurIPS 2024"
+      venue_id: "NeurIPS.cc/2024/Conference"
+      description: "Conference on Neural Information Processing Systems"
+      category: "AI/ML"
+      keywords:
+        - "large language model"
+        - "foundation model" 
+        - "reinforcement learning"
+        - "multimodal"
+        - "neural network"
+        - "machine learning"
+        - "AI agent"
+      push_frequency: "monthly"  # AI/ML会议月度推送
+      
+    - name: "ICML 2024"
+      venue_id: "ICML.cc/2024/Conference"
+      description: "International Conference on Machine Learning"
+      category: "AI/ML"
+      keywords:
+        - "machine learning"
+        - "deep learning"
+        - "reinforcement learning"
+        - "large language model"
+        - "foundation model"
+        - "optimization"
+      push_frequency: "monthly"  # AI/ML会议月度推送
+      
+    # 更多AI/ML顶级会议
+    - name: "AAAI 2025"
+      venue_id: "AAAI.org/2025/Conference"
+      description: "AAAI Conference on Artificial Intelligence"
+      category: "AI/ML"
+      keywords:
+        - "artificial intelligence"
+        - "machine learning"
+        - "deep learning"
+        - "large language model"
+        - "AI agent"
+        - "multimodal"
+        - "neural network"
+      push_frequency: "monthly"
+      
+    - name: "IJCAI 2025"
+      venue_id: "IJCAI.org/2025/Conference"
+      description: "International Joint Conference on Artificial Intelligence"
+      category: "AI/ML"
+      keywords:
+        - "artificial intelligence"
+        - "machine learning"
+        - "AI agent"
+        - "large language model"
+        - "knowledge representation"
+        - "reasoning"
+      push_frequency: "monthly"
+      
+    # 安全方向顶级会议  
+    - name: "IEEE S&P 2024"
+      venue_id: "IEEE.org/2024/SP"
+      description: "IEEE Symposium on Security and Privacy"
+      category: "Security"
+      keywords:
+        - "privacy"
+        - "security"
+        - "cryptography"
+        - "vulnerability"
+        - "malware"
+        - "attack"
+        - "defense"
+        - "AI security"
+        - "federated learning"
+        - "differential privacy"
+      push_frequency: "quarterly"  # 安全会议季度推送
+      
+    - name: "CCS 2024"
+      venue_id: "ACM.org/2024/CCS"  
+      description: "ACM Conference on Computer and Communications Security"
+      category: "Security"
+      keywords:
+        - "security"
+        - "cryptography"
+        - "privacy"
+        - "authentication"
+        - "blockchain"
+        - "AI security"
+        - "machine learning security"
+        - "adversarial"
+      push_frequency: "quarterly"  # 安全会议季度推送
+      
+    - name: "USENIX Security 2024"
+      venue_id: "USENIX.org/2024/Security"
+      description: "USENIX Security Symposium"
+      category: "Security"  
+      keywords:
+        - "system security"
+        - "network security"
+        - "privacy"
+        - "cryptography"
+        - "vulnerability"
+        - "AI security"
+        - "machine learning security"
+      push_frequency: "quarterly"  # 安全会议季度推送
+      
+    # AI安全相关专门会议和研讨会
+    - name: "AISec 2025"
+      venue_id: "ACM.org/2025/AISec"
+      description: "ACM Workshop on Artificial Intelligence and Security"
+      category: "AI Security"
+      keywords:
+        - "AI security"
+        - "machine learning security" 
+        - "adversarial AI"
+        - "adversarial machine learning"
+        - "AI safety"
+        - "trustworthy AI"
+        - "AI robustness"
+        - "security"
+        - "privacy"
+      push_frequency: "quarterly"
+      
+    - name: "NDSS 2025"
+      venue_id: "NDSS.org/2025/Conference"
+      description: "Network and Distributed System Security Symposium"
+      category: "Security"
+      keywords:
+        - "network security"
+        - "system security"
+        - "AI security"
+        - "machine learning security"
+        - "privacy"
+        - "cryptography"
+        - "malware"
+        - "vulnerability"
+      push_frequency: "quarterly"
+      
+    - name: "ACSAC 2024"
+      venue_id: "ACSAC.org/2024/Conference"
+      description: "Annual Computer Security Applications Conference"
+      category: "Security"
+      keywords:
+        - "application security"
+        - "system security"
+        - "AI security"
+        - "machine learning security"
+        - "vulnerability"
+        - "malware analysis"
+        - "security testing"
+      push_frequency: "quarterly"
+      
+    - name: "CRYPTO 2024"
+      venue_id: "IACR.org/2024/CRYPTO"
+      description: "International Cryptology Conference"
+      category: "Cryptography"
+      keywords:
+        - "cryptography"
+        - "privacy"
+        - "zero-knowledge"
+        - "homomorphic encryption"
+        - "secure computation"
+        - "blockchain"
+        - "privacy-preserving AI"
+      push_frequency: "quarterly"
+      
+    - name: "EUROCRYPT 2025"
+      venue_id: "IACR.org/2025/EUROCRYPT"
+      description: "International Conference on the Theory and Applications of Cryptographic Techniques"
+      category: "Cryptography"
+      keywords:
+        - "cryptography"
+        - "privacy"
+        - "secure computation"
+        - "privacy-preserving machine learning"
+        - "differential privacy"
+        - "homomorphic encryption"
+      push_frequency: "quarterly"
+      
+  # 会议论文推送设置
+  conference_email:
+    enabled: true  # 是否启用会议论文邮件推送
+    subject_prefix: "[Conference Papers]"  # 邮件主题前缀
+    separate_by_category: true  # 是否按类别分开发送邮件
+    
+  # 会议论文分类配置
+  conference_paper_categories:
+    "🤖 LLM & Foundation Models":
+      - "large language model"
+      - "foundation model"
+      - "language model"
+      - "GPT"
+      - "transformer"
+      - "pre-training"
+      - "fine-tuning"
+    "🎯 Machine Learning":
+      - "machine learning"
+      - "deep learning"
+      - "neural network"
+      - "reinforcement learning"
+      - "optimization"
+      - "representation learning"
+    "🎨 Multimodal & Vision":
+      - "multimodal"
+      - "computer vision"
+      - "vision-language"
+      - "image"
+      - "video"
+    "🔒 AI Security & Privacy":
+      - "AI security"
+      - "machine learning security"
+      - "adversarial"
+      - "privacy-preserving"
+      - "differential privacy"
+      - "federated learning"
+    "🛡️ Security & Cryptography":
+      - "security"
+      - "cryptography"
+      - "privacy"
+      - "authentication"
+      - "vulnerability"
+      - "blockchain"
+      - "malware"
+    "🔧 Other":
+      - "system"
+      - "network"
+      - "database"

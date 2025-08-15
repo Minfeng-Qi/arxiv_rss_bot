@@ -1,0 +1,13 @@
+[Unit]
+Description=arXiv RSS Filter Bot API
+After=network.target
+
+[Service]
+User=vicuna
+WorkingDirectory=/home/vicuna/marco/arxiv_rss_bot
+ExecStart=/home/vicuna/marco/arxiv_rss_bot/.venv/bin/python api.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

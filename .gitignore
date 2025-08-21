@@ -1,0 +1,71 @@
+# API密钥和敏感配置
+config_local.yaml
+config_production.yaml
+.env
+*.key
+*.pem
+
+# 日志文件
+logs/
+*.log
+
+# 分析结果（包含敏感数据）
+analysis_results/
+cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# 进程ID文件
+*.pid
+
+# 临时文件
+*.tmp
+*.temp
+
+# 历史记录（可能包含敏感数据）
+history/
+
+# 输出文件
+output/
+
+# 会议输出
+conference_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 备份文件
+*.backup
+*.bak
+
+# 测试覆盖率
+.coverage
+htmlcov/
+
+# Notion数据库ID和其他配置
+local_config.yaml
+private_config.yaml
+config.yaml  # 包含API密钥，不推送到远程
+
+# 订阅历史（可能包含邮箱等敏感信息）
+subscription_history.json

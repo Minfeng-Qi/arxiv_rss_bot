@@ -1,0 +1,95 @@
+# arXiv RSS Filter Bot 配置文件模板
+# 复制此文件为 config.yaml 并填入真实的API密钥和配置信息
+
+ai_analysis:
+  auto_analysis_enabled: true
+  deepseek:
+    api_key: "your-deepseek-api-key-here"  # 从 https://platform.deepseek.com 获取
+    enabled: true
+  max_papers_per_batch: 20
+  notion:
+    database_id: "your-notion-database-id-here"  # Notion数据库ID
+    enabled: true
+    integration_token: "your-notion-integration-token-here"  # Notion集成令牌
+  smart_selection:
+    enabled: true
+    min_score_threshold: 0.6
+
+author_weight: 0.2
+
+categories:
+- cs.LG
+- cs.AI
+- cs.CL
+
+conferences:
+  conference_email:
+    enabled: true
+    separate_by_category: true
+    subject_prefix: '[Conference Papers]'
+  conference_list:
+  - category: AI/ML
+    description: International Conference on Learning Representations
+    keywords:
+    - large language model
+    - foundation model
+    - reinforcement learning
+    name: ICLR
+    website: https://iclr.cc
+  enabled: true
+
+email:
+  password: "your-email-app-password"  # 邮箱应用密码
+  port: 465
+  recipient: "recipient@gmail.com"  # 接收邮件的地址
+  smtp_server: smtp.163.com
+  username: "your-email@163.com"  # 发送邮件的地址
+
+email_subscription: true
+
+keywords:
+- reinforcement learning
+- LLM agents
+- large language model
+- foundation model
+- multimodal
+
+max_days_old: 365
+max_results: 100
+
+paper_categories:
+  🎨 Multimodal & Computer Vision:
+  - multimodal
+  - computer vision
+  - vision-language
+  - visual
+  - image
+  - video
+  🎯 Reinforcement Learning:
+  - reinforcement learning
+  - RL
+  - policy
+  - reward
+  - agent
+  🏗️ Foundation Models:
+  - foundation model
+  - pretrained
+  - pretraining
+  - scaling
+  - emergent
+  🤖 LLM & AI Agents:
+  - large language model
+  - LLM
+  - language model
+  - AI agent
+  - conversational
+  🔧 Other AI/ML:
+  - machine learning
+  - deep learning
+  - neural network
+
+recency_weight: 0.3
+run_hour: 7
+
+rss_description: Automatically filtered arXiv papers based on your research interests
+rss_title: arXiv RSS Filter Bot - Personalized Papers
